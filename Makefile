@@ -1,0 +1,67 @@
+PWD=$(shell pwd -L)
+
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
+all: help
+
+install: install-hubble install-helm install-kubectl install-minikube install-terraform    ## Install all dependency binaries
+
+install-helm:                                                                              ## Install helm dependency binary
+	@echo "Installing Kubernetes Helm Development Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "helm.tar.gz" https://get.helm.sh/helm-v$$(curl -s https://api.github.com/repos/helm/helm/tags | jq -r '.[].name' | egrep -v 'rc|beta|alpha|dev' | cut -d 'v' -f 2 | sort -t. -k 1,1n -k 2,2n -k 3,3n | tail -1)-linux-amd64.tar.gz && \
+	 tar -xf helm.tar.gz && \
+	 sudo install "linux-amd64/helm" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/helm" && \
+	 rm -rf "linux-amd64"
+	@rm -rf work
+
+install-hubble:                                                                            ## Install hubble dependency binary
+	@echo "Installing Cilium Hubble Instrumentation Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "hubble.tar.gz" https://github.com/cilium/hubble/releases/download/$$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)/hubble-linux-amd64.tar.gz && \
+	 tar -xf hubble.tar.gz && \
+	 sudo install "hubble" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/hubble"
+	@rm -rf work
+
+
+install-kubectl:                                                                           ## Install kubectl dependency binary
+	@echo "Installing Kubernetes Controller Development Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "kubectl" https://storage.googleapis.com/kubernetes-release/release/$$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+	 sudo install "kubectl" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/kubectl"
+	@rm -rf work
+
+install-minikube:                                                                          ## Install minikube dependency binary
+	@echo "Installing Minikube Development Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "minikube" https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
+	 sudo install "minikube" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/minikube"
+	@rm -rf work
+
+install-terraform:                                                                         ## Install terraform dependency binary
+	@echo "Installing HashiCorp Terraform Development Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "terraform.zip" $$(curl -s https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 3.15,3n -k 4,4n -k 5,5n | egrep -v 'rc|beta|alpha' | egrep 'linux.*amd64' | tail -1) && \
+	 sudo unzip -qq -o "terraform.zip" -d "." && \
+	 sudo install "terraform" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/terraform"
+	@rm -rf work
+
+help:                                                                                      ## Display help screen
+	@echo "Usage:"
+	@echo "	 make [COMMAND]"
+	@echo "	 make help \n"
+	@echo "Commands: \n"
+	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
