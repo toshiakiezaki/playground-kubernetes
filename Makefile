@@ -59,6 +59,46 @@ install-terraform:                                                              
 	 sudo chmod +x "/usr/local/bin/terraform"
 	@rm -rf work
 
+cluster: cluster-status                                                                    ## Execute default task for cluster
+
+cluster-start:                                                                             ## Start existing cluster
+	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
+		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
+	 else \
+		minikube start; \
+	 fi
+
+cluster-stop:                                                                              ## Stop existing cluster
+	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
+		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
+	 else \
+		minikube stop; \
+	 fi
+
+cluster-config:                                                                            ## Configure a new cluster
+	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
+	 	echo "Creating cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
+		minikube start --cni=cilium --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}"; \
+	 else \
+	 	echo "Cluster already exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
+	 fi
+
+cluster-destroy:                                                                           ## Destroy existing cluster
+	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" != "" ]; then \
+	 	echo "Destroying cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
+		minikube delete; \
+	 else \
+		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
+	 fi
+
+cluster-status:                                                                            ## Show cluster status
+	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" != "" ]; then \
+	 	echo "Describing cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
+		minikube status; \
+	 else \
+		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
+	 fi
+
 help:                                                                                      ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
