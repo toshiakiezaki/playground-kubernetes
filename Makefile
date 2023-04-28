@@ -89,7 +89,10 @@ cluster-stop:                                                                   
 cluster-config:                                                                                           ## Configure a new cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
 	 	echo "Creating cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
-		minikube start --cni=cilium --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}"; \
+		minikube start --network-plugin=cni --cni=false --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}" && \
+		cilium install && \
+		cilium hubble enable --ui && \
+		minikube addons enable kong ; \
 	 else \
 	 	echo "Cluster already exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 fi
