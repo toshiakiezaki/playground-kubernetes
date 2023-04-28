@@ -7,9 +7,20 @@ endif
 
 all: help
 
-install: install-hubble install-helm install-kubectl install-minikube install-terraform    ## Install all dependency binaries
+install: install-cilium install-hubble install-helm install-kubectl install-minikube install-terraform    ## Install all dependency binaries
 
-install-helm:                                                                              ## Install helm dependency binary
+install-cilium:                                                                                           ## Install cilium dependency binary
+	@echo "Installing Cilium Command Line Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "cilium.tar.gz" https://github.com/cilium/cilium-cli/releases/download/$$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt)/cilium-linux-amd64.tar.gz && \
+	 tar -xf cilium.tar.gz && \
+	 sudo install "cilium" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/cilium"
+	@rm -rf work
+
+
+install-helm:                                                                                             ## Install helm dependency binary
 	@echo "Installing Kubernetes Helm Development Tool..."
 	@mkdir -p work
 	@cd work && \
@@ -20,7 +31,7 @@ install-helm:                                                                   
 	 rm -rf "linux-amd64"
 	@rm -rf work
 
-install-hubble:                                                                            ## Install hubble dependency binary
+install-hubble:                                                                                           ## Install hubble dependency binary
 	@echo "Installing Cilium Hubble Instrumentation Tool..."
 	@mkdir -p work
 	@cd work && \
@@ -31,7 +42,7 @@ install-hubble:                                                                 
 	@rm -rf work
 
 
-install-kubectl:                                                                           ## Install kubectl dependency binary
+install-kubectl:                                                                                          ## Install kubectl dependency binary
 	@echo "Installing Kubernetes Controller Development Tool..."
 	@mkdir -p work
 	@cd work && \
@@ -40,7 +51,7 @@ install-kubectl:                                                                
 	 sudo chmod +x "/usr/local/bin/kubectl"
 	@rm -rf work
 
-install-minikube:                                                                          ## Install minikube dependency binary
+install-minikube:                                                                                         ## Install minikube dependency binary
 	@echo "Installing Minikube Development Tool..."
 	@mkdir -p work
 	@cd work && \
@@ -49,7 +60,7 @@ install-minikube:                                                               
 	 sudo chmod +x "/usr/local/bin/minikube"
 	@rm -rf work
 
-install-terraform:                                                                         ## Install terraform dependency binary
+install-terraform:                                                                                        ## Install terraform dependency binary
 	@echo "Installing HashiCorp Terraform Development Tool..."
 	@mkdir -p work
 	@cd work && \
@@ -59,23 +70,23 @@ install-terraform:                                                              
 	 sudo chmod +x "/usr/local/bin/terraform"
 	@rm -rf work
 
-cluster: cluster-status                                                                    ## Execute default task for cluster
+cluster: cluster-status                                                                                   ## Execute default task for cluster
 
-cluster-start:                                                                             ## Start existing cluster
+cluster-start:                                                                                            ## Start existing cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
 		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 else \
 		minikube start; \
 	 fi
 
-cluster-stop:                                                                              ## Stop existing cluster
+cluster-stop:                                                                                             ## Stop existing cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
 		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 else \
 		minikube stop; \
 	 fi
 
-cluster-config:                                                                            ## Configure a new cluster
+cluster-config:                                                                                           ## Configure a new cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
 	 	echo "Creating cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
 		minikube start --cni=cilium --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}"; \
@@ -83,7 +94,7 @@ cluster-config:                                                                 
 	 	echo "Cluster already exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 fi
 
-cluster-destroy:                                                                           ## Destroy existing cluster
+cluster-destroy:                                                                                          ## Destroy existing cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" != "" ]; then \
 	 	echo "Destroying cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
 		minikube delete; \
@@ -91,7 +102,7 @@ cluster-destroy:                                                                
 		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 fi
 
-cluster-status:                                                                            ## Show cluster status
+cluster-status:                                                                                           ## Show cluster status
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" != "" ]; then \
 	 	echo "Describing cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
 		minikube status; \
@@ -99,7 +110,7 @@ cluster-status:                                                                 
 		echo "Cluster does not exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 fi
 
-help:                                                                                      ## Display help screen
+help:                                                                                                     ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
 	@echo "	 make help \n"
