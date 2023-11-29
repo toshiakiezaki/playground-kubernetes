@@ -24,7 +24,7 @@ install-helm:                                                                   
 	@echo "Installing Kubernetes Helm Development Tool..."
 	@mkdir -p work
 	@cd work && \
-	 curl -s -Lo "helm.tar.gz" https://get.helm.sh/helm-v$$(curl -s https://api.github.com/repos/helm/helm/tags | jq -r '.[].name' | egrep -v 'rc|beta|alpha|dev' | cut -d 'v' -f 2 | sort -t. -k 1,1n -k 2,2n -k 3,3n | tail -1)-linux-amd64.tar.gz && \
+	 curl -s -Lo "helm.tar.gz" https://get.helm.sh/helm-v$$(curl -s https://api.github.com/repos/helm/helm/tags | jq -r '.[].name' | grep -E -v 'rc|beta|alpha|dev' | cut -d 'v' -f 2 | sort -t. -k 1,1n -k 2,2n -k 3,3n | tail -1)-linux-amd64.tar.gz && \
 	 tar -xf helm.tar.gz && \
 	 sudo install "linux-amd64/helm" "/usr/local/bin" && \
 	 sudo chmod +x "/usr/local/bin/helm" && \
@@ -64,7 +64,7 @@ install-terraform:                                                              
 	@echo "Installing HashiCorp Terraform Development Tool..."
 	@mkdir -p work
 	@cd work && \
-	 curl -s -Lo "terraform.zip" $$(curl -s https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 3.15,3n -k 4,4n -k 5,5n | egrep -v 'rc|beta|alpha' | egrep 'linux.*amd64' | tail -1) && \
+	 curl -s -Lo "terraform.zip" $$(curl -s https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 3.15,3n -k 4,4n -k 5,5n | grep -E -v 'rc|beta|alpha' | grep -E 'linux.*amd64' | tail -1) && \
 	 sudo unzip -qq -o "terraform.zip" -d "." && \
 	 sudo install "terraform" "/usr/local/bin" && \
 	 sudo chmod +x "/usr/local/bin/terraform"
