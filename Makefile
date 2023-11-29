@@ -91,8 +91,7 @@ cluster-config:                                                                 
 	 	echo "Creating cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
 		minikube start --network-plugin=cni --cni=false --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}" && \
 		cilium install && \
-		cilium hubble enable --ui && \
-		minikube addons enable kong ; \
+		cilium hubble enable --ui ; \
 	 else \
 	 	echo "Cluster already exists with profile '$${MINIKUBE_PROFILE:-minikube}'"; \
 	 fi
