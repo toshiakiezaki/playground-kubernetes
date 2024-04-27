@@ -1,0 +1,2 @@
+MINIKUBE_PROFILE=playground
+MINIKUBE_DOMAIN=svc.local
