@@ -89,7 +89,7 @@ cluster-stop:                                                                   
 cluster-config:                                                                                           ## Configure a new cluster
 	@if [ "$$(minikube profile list -l -o json | jq -r '.valid[].Name' | grep playground)" == "" ]; then \
 	 	echo "Creating cluster with profile '$${MINIKUBE_PROFILE:-minikube}'" && \
-		minikube start --network-plugin=cni --cni=false --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}" && \
+		minikube start --kubernetes-version=v1.29.4 --network-plugin=cni --cni=false --cpus=4 --memory=16000 --dns-domain="$${MINIKUBE_DOMAIN:-svc.local}" --extra-config="kubelet.cluster-domain=$${MINIKUBE_DOMAIN:-svc.local}" && \
 		cilium install --set cluster.id=1 --set hubble.relay.enabled=true --set hubble.ui.enabled=true --set hubble.peerService.clusterDomain="$${MINIKUBE_DOMAIN:-svc.local}" --set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,httpV2:exemplars=true;labelsContext=source_ip\,source_namespace\,source_workload\,destination_ip\,destination_namespace\,destination_workload\,traffic_direction}"  && \
 		cilium hubble enable --ui ; \
 	 else \
