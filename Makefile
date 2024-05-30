@@ -68,6 +68,32 @@ install-terraform:                                                              
 	 sudo chmod +x "/usr/local/bin/terraform"
 	@rm -rf work
 
+cluster: cluster-status                                                                                   ## Execute default task for cluster
+
+cluster-create:                                                                                           ## Configure a new cluster
+	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
+	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
+		kind create cluster; \
+	 else \
+	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
+	 fi
+
+cluster-destroy:                                                                                          ## Destroy existing cluster
+	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" != "" ]; then \
+	 	echo "Destroying cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
+		kind delete cluster; \
+	 else \
+		echo "Cluster does not exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
+	 fi
+
+cluster-status:                                                                                           ## Show cluster status
+	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" != "" ]; then \
+	 	echo "Describing cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
+		kubectl cluster-info --context kind-$${KIND_CLUSTER_NAME:-kind}; \
+	 else \
+		echo "Cluster does not exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
+	 fi
+
 help:                                                                                                     ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
