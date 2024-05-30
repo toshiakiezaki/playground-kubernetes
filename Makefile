@@ -19,6 +19,15 @@ install-cilium:                                                                 
 	 sudo chmod +x "/usr/local/bin/cilium"
 	@rm -rf work
 
+install-hubble:                                                                                           ## Install hubble dependency binary
+	@echo "Installing Cilium Hubble Instrumentation Tool..."
+	@mkdir -p work
+	@cd work && \
+	 curl -s -Lo "hubble.tar.gz" https://github.com/cilium/hubble/releases/download/$$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)/hubble-linux-amd64.tar.gz && \
+	 tar -xf hubble.tar.gz && \
+	 sudo install "hubble" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/hubble"
+	@rm -rf work
 
 install-helm:                                                                                             ## Install helm dependency binary
 	@echo "Installing Kubernetes Helm Development Tool..."
@@ -31,17 +40,6 @@ install-helm:                                                                   
 	 rm -rf "linux-amd64"
 	@rm -rf work
 
-install-hubble:                                                                                           ## Install hubble dependency binary
-	@echo "Installing Cilium Hubble Instrumentation Tool..."
-	@mkdir -p work
-	@cd work && \
-	 curl -s -Lo "hubble.tar.gz" https://github.com/cilium/hubble/releases/download/$$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)/hubble-linux-amd64.tar.gz && \
-	 tar -xf hubble.tar.gz && \
-	 sudo install "hubble" "/usr/local/bin" && \
-	 sudo chmod +x "/usr/local/bin/hubble"
-	@rm -rf work
-
-
 install-kubectl:                                                                                          ## Install kubectl dependency binary
 	@echo "Installing Kubernetes Controller Development Tool..."
 	@mkdir -p work
@@ -52,7 +50,7 @@ install-kubectl:                                                                
 	@rm -rf work
 
 install-kind:                                                                                             ## Install kind dependency binary
-	@echo "Installing Kind Development Tool..."
+	@echo "Installing Kubernetes Kind Development Tool..."
 	@mkdir -p work
 	@cd work && \
 	 curl -s -Lo "kind" https://kind.sigs.k8s.io/dl/v$$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/tags | jq -r '.[].name' | grep -E -v 'rc|beta|alpha|dev' | cut -d 'v' -f 2 | sort -t. -k 1,1n -k 2,2n -k 3,3n | tail -1)/kind-linux-amd64 && \
