@@ -73,7 +73,7 @@ cluster: cluster-status                                                         
 cluster-create:                                                                                           ## Configure a new cluster
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
-		kind create cluster; \
+		kind create cluster --config cluster/kind.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
