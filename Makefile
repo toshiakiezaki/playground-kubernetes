@@ -7,7 +7,7 @@ endif
 
 all: help
 
-install: install-cilium install-hubble install-helm install-kubectl install-minikube install-terraform    ## Install all dependency binaries
+install: install-cilium install-hubble install-helm install-kubectl install-kind install-terraform        ## Install all dependency binaries
 
 install-cilium:                                                                                           ## Install cilium dependency binary
 	@echo "Installing Cilium Command Line Tool..."
@@ -51,13 +51,13 @@ install-kubectl:                                                                
 	 sudo chmod +x "/usr/local/bin/kubectl"
 	@rm -rf work
 
-install-minikube:                                                                                         ## Install minikube dependency binary
-	@echo "Installing Minikube Development Tool..."
+install-kind:                                                                                             ## Install kind dependency binary
+	@echo "Installing Kind Development Tool..."
 	@mkdir -p work
 	@cd work && \
-	 curl -s -Lo "minikube" https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
-	 sudo install "minikube" "/usr/local/bin" && \
-	 sudo chmod +x "/usr/local/bin/minikube"
+	 curl -s -Lo "kind" https://kind.sigs.k8s.io/dl/v$$(curl -s https://api.github.com/repos/kubernetes-sigs/kind/tags | jq -r '.[].name' | grep -E -v 'rc|beta|alpha|dev' | cut -d 'v' -f 2 | sort -t. -k 1,1n -k 2,2n -k 3,3n | tail -1)/kind-linux-amd64 && \
+	 sudo install "kind" "/usr/local/bin" && \
+	 sudo chmod +x "/usr/local/bin/kind"
 	@rm -rf work
 
 install-terraform:                                                                                        ## Install terraform dependency binary
