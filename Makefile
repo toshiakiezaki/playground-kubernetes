@@ -37,6 +37,8 @@ install-helm:                                                                   
 	 tar -xf helm.tar.gz && \
 	 sudo install "linux-amd64/helm" "/usr/local/bin" && \
 	 sudo chmod +x "/usr/local/bin/helm" && \
+	 helm repo add cilium https://helm.cilium.io --force-update && \
+	 helm repo update && \
 	 rm -rf "linux-amd64"
 	@rm -rf work
 
