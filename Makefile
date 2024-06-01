@@ -75,7 +75,8 @@ cluster: cluster-status                                                         
 cluster-create:                                                                                           ## Configure a new cluster
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
-		kind create cluster --config cluster/kind.yaml; \
+		kind create cluster --config cluster/kind.yaml && \
+		helm install -n kube-system cilium cilium/cilium -f cluster/cilium.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
@@ -91,7 +92,9 @@ cluster-destroy:                                                                
 cluster-status:                                                                                           ## Show cluster status
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" != "" ]; then \
 	 	echo "Describing cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
-		kubectl cluster-info --context kind-$${KIND_CLUSTER_NAME:-kind}; \
+		kubectl cluster-info --context kind-$${KIND_CLUSTER_NAME:-kind} && \
+		echo && \
+		kubectl get nodes; \
 	 else \
 		echo "Cluster does not exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
