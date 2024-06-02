@@ -1,20 +1,31 @@
 cluster:
   name: kind-playground
+
 k8sServiceHost: playground-control-plane
 k8sServicePort: 6443
 kubeProxyReplacement: strict
+
+routingMode: native
+ipv4NativeRoutingCIDR: 10.244.0.0/16
+enableIPv4Masquerade: true
+autoDirectNodeRoutes: true
+
 ipv4:
   enabled: true
 ipv6:
   enabled: false
+
+ipam:
+  mode: kubernetes
 hubble:
   relay:
     enabled: true
   ui:
     enabled: true
-ipam:
-  mode: kubernetes
-routingMode: native
-ipv4NativeRoutingCIDR: 10.244.0.0/16
-enableIPv4Masquerade: true
-autoDirectNodeRoutes: true
+bpf:
+  masquerade: true
+ipMasqAgent:
+  enabled: true
+  config:
+    nonMasqueradeCIDRs:
+      - 10.244.0.0/16
