@@ -18,6 +18,8 @@ ipv6:
 ipam:
   mode: kubernetes
 hubble:
+  peerService:
+    clusterDomain: eidolons.cloud
   relay:
     enabled: true
   ui:
