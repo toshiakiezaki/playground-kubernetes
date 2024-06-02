@@ -37,7 +37,11 @@ install-helm:                                                                   
 	 tar -xf helm.tar.gz && \
 	 sudo install "linux-amd64/helm" "/usr/local/bin" && \
 	 sudo chmod +x "/usr/local/bin/helm" && \
-	 helm repo add cilium https://helm.cilium.io --force-update && \
+	 helm repo add argo          https://argoproj.github.io/argo-helm                       --force-update && \
+	 helm repo add kong          https://charts.konghq.com                                  --force-update && \
+	 helm repo add cilium        https://helm.cilium.io                                     --force-update && \
+	 helm repo add grafana       https://grafana.github.io/helm-charts                      --force-update && \
+	 helm repo add opentelemetry https://open-telemetry.github.io/opentelemetry-helm-charts --force-update && \
 	 helm repo update && \
 	 rm -rf "linux-amd64"
 	@rm -rf work
