@@ -80,7 +80,11 @@ cluster-create:                                                                 
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
-		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml; \
+		kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/standard-install.yaml && \
+		kubectl apply -f cluster/kong-gateway.yaml && \
+		kubectl apply -f cluster/kong-gateway-class.yaml && \
+		helm install --create-namespace -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml && \
+		helm install --create-namespace -n kong kong kong/ingress -f cluster/kong-operator.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
