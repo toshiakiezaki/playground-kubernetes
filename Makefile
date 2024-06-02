@@ -79,8 +79,8 @@ cluster: cluster-status                                                         
 cluster-create:                                                                                           ## Configure a new cluster
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
-		kind create cluster --config cluster/kind.yaml && \
-		helm install -n kube-system cilium cilium/cilium -f cluster/cilium.yaml; \
+		kind create cluster --config cluster/kind-cluster-settings.yaml && \
+		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
