@@ -1,4 +1,5 @@
 cluster:
+  id: 1
   name: kind-playground
 
 k8sServiceHost: playground-control-plane
@@ -24,6 +25,10 @@ hubble:
     enabled: true
   ui:
     enabled: true
+ingressController:
+  enabled: true
+  default: true
+  loadbalancerMode: dedicated
 bpf:
   masquerade: true
 ipMasqAgent:

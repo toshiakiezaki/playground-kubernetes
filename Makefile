@@ -79,7 +79,10 @@ cluster-create:                                                                 
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
-		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml; \
+		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml && \
+		for ((count = 1; count <= 60; count++)); do sleep 1 && if [ "$$(kubectl get nodes | grep control-plane | awk '{print $$2}')" == "Ready" ]; then break; fi; done && \
+		kubectl apply -f cluster/cilium-loadbalancer-pool.yaml && \
+		kubectl taint nodes $${KIND_CLUSTER_NAME:-kind}-control-plane node-role.kubernetes.io/control-plane-; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
