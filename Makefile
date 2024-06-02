@@ -38,7 +38,6 @@ install-helm:                                                                   
 	 sudo install "linux-amd64/helm" "/usr/local/bin" && \
 	 sudo chmod +x "/usr/local/bin/helm" && \
 	 helm repo add argo          https://argoproj.github.io/argo-helm                       --force-update && \
-	 helm repo add kong          https://charts.konghq.com                                  --force-update && \
 	 helm repo add cilium        https://helm.cilium.io                                     --force-update && \
 	 helm repo add grafana       https://grafana.github.io/helm-charts                      --force-update && \
 	 helm repo add opentelemetry https://open-telemetry.github.io/opentelemetry-helm-charts --force-update && \
@@ -81,10 +80,7 @@ cluster-create:                                                                 
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
 		kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/standard-install.yaml && \
-		kubectl apply -f cluster/kong-gateway.yaml && \
-		kubectl apply -f cluster/kong-gateway-class.yaml && \
-		helm install --create-namespace -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml && \
-		helm install --create-namespace -n kong kong kong/ingress -f cluster/kong-operator.yaml; \
+		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
