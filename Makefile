@@ -79,7 +79,6 @@ cluster-create:                                                                 
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
-		kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.0.0/standard-install.yaml && \
 		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
