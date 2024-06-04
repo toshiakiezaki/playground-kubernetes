@@ -17,9 +17,9 @@ hubble:
   peerService:
     clusterDomain: eidolons.cloud
   relay:
-    enabled: true
+    enabled: false
   ui:
-    enabled: true
+    enabled: false
 ingressController:
   enabled: true
   default: true
