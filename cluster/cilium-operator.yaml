@@ -24,10 +24,3 @@ ingressController:
   enabled: true
   default: true
   loadbalancerMode: dedicated
-bpf:
-  masquerade: true
-ipMasqAgent:
-  enabled: true
-  config:
-    nonMasqueradeCIDRs:
-      - 10.244.0.0/16
