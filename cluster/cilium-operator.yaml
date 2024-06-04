@@ -6,11 +6,6 @@ k8sServiceHost: playground-control-plane
 k8sServicePort: 6443
 kubeProxyReplacement: strict
 
-routingMode: native
-ipv4NativeRoutingCIDR: 10.244.0.0/16
-enableIPv4Masquerade: true
-autoDirectNodeRoutes: true
-
 ipv4:
   enabled: true
 ipv6:

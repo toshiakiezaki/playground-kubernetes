@@ -79,6 +79,8 @@ cluster-create:                                                                 
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
+		kubectl apply -n kube-system -f cluster/coredns-configmap.yaml && \
+		kubectl -n kube-system rollout restart deployment coredns && \
 		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml && \
 		for ((count = 1; count <= 60; count++)); do sleep 1 && if [ "$$(kubectl get nodes | grep control-plane | awk '{print $$2}')" == "Ready" ]; then break; fi; done && \
 		kubectl apply -f cluster/cilium-loadbalancer-pool.yaml && \
