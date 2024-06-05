@@ -78,13 +78,16 @@ cluster: cluster-status                                                         
 cluster-create:                                                                                           ## Configure a new cluster
 	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" == "" ]; then \
 	 	echo "Creating cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
+		mkdir -p work && \
 		kind create cluster --config cluster/kind-cluster-settings.yaml && \
-		kubectl apply -n kube-system -f cluster/coredns-configmap.yaml && \
+		kubectl get -o yaml -n kube-system configmap coredns > work/coredns-original.yaml && \
+		cat work/coredns-original.yaml | sed 's|/etc/resolv.conf|192.168.3.1|g' > work/coredns-replaced.yaml && \
+		kubectl apply -n kube-system -f work/coredns-replaced.yaml && \
 		kubectl -n kube-system rollout restart deployment coredns && \
 		helm install -n kube-system cilium cilium/cilium -f cluster/cilium-operator.yaml && \
 		for ((count = 1; count <= 60; count++)); do sleep 1 && if [ "$$(kubectl get nodes | grep control-plane | awk '{print $$2}')" == "Ready" ]; then break; fi; done && \
 		kubectl apply -f cluster/cilium-loadbalancer-pool.yaml && \
-		kubectl taint nodes $${KIND_CLUSTER_NAME:-kind}-control-plane node-role.kubernetes.io/control-plane-; \
+		rm -rf work; \
 	 else \
 	 	echo "Cluster already exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
