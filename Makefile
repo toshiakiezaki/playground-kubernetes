@@ -107,6 +107,16 @@ cluster-status:                                                                 
 		echo "Cluster does not exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
 	 fi
 
+cluster-test:                                                                                             ## Perform multiple test to check cluster stability
+	@if [ "$$(kind get clusters --quiet | grep $${KIND_CLUSTER_NAME:-kind})" != "" ]; then \
+	 	echo "Running connectivity tests on cluster with profile '$${KIND_CLUSTER_NAME:-kind}'" && \
+		kubectl taint nodes $${KIND_CLUSTER_NAME:-kind}-control-plane node-role.kubernetes.io/control-plane:NoSchedule- && \
+		cilium connectivity test --single-node && \
+		kubectl taint nodes $${KIND_CLUSTER_NAME:-kind}-control-plane node-role.kubernetes.io/control-plane:NoSchedule; \
+	 else \
+		echo "Cluster does not exists with profile '$${KIND_CLUSTER_NAME:-kind}'"; \
+	 fi
+
 help:                                                                                                     ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
